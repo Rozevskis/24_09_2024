@@ -8,4 +8,5 @@ use App\Http\Controllers\CustomerController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::get('/customers', [CustomerController::class, 'index']);
+Route::get('/customers/goldmembers', [CustomerController::class, 'returnGoldMembers']);
+Route::apiResource('customers', CustomerController::class);
