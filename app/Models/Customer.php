@@ -31,9 +31,22 @@ class Customer extends Model
     // If the primary key is not auto-incrementing
     public $incrementing = false;
 
-    // If the primary key is not an integer
-    // protected $keyType = 'string'; // Only if it's a string, otherwise remove this line
+    protected $hidden = [
+        'birth_date',
+        'phone',
+    ];
 
     // If your table doesn't use Laravel's default timestamps (created_at, updated_at)
     public $timestamps = false;
+
+    // Append the is_gold_member attribute to the JSON response
+    protected $appends = ['is_gold_member'];
+
+    // Accessor to check if a customer is a gold member
+    public function getIsGoldMemberAttribute()
+    {
+        // Returns true if the customer has 2000 or more points
+        return $this->points >= 2000;
+    }
+   
 }
