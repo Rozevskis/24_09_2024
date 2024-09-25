@@ -48,5 +48,10 @@ class Customer extends Model
         // Returns true if the customer has 2000 or more points
         return $this->points >= 2000;
     }
+
+    public function order(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
    
 }
