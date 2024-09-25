@@ -27,6 +27,9 @@ class CustomerController extends Controller
             'state' => ['required', 'max:2', 'string'],
             'points' => ['required']
         ]);
+
+        $customer = Customer::create($data);
+        return $customer;
     }
 
     public function show(string $id)
