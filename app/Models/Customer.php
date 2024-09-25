@@ -49,10 +49,8 @@ class Customer extends Model
         return $this->points >= 2000;
     }
 
-    public function order(): HasMany
-{
-    return $this->hasMany(Order::class, 'customer_id', 'customer_id'); // Specify the foreign key and local key
-}
-
-   
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'customer_id', 'customer_id'); // Specify the foreign key and local key
+    }
 }

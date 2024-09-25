@@ -4,30 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Customer;
+
 
 class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index($customerId)
+    public function index($customer_id)
     {
-        $ordersWithStatus = DB::table('orders as o')
-            ->join('order_statuses as os', 'o.status', '=', 'os.order_status_id')
-            ->select(
-                'o.order_id',
-                'o.customer_id',
-                'o.order_date',
-                'os.name as Order_Status',  // Alias for the order status name
-                'o.comments',
-                'o.shipped_date',
-                'o.shipper_id'
-            )
-            ->where('o.customer_id', $customerId)  // Filter by customer ID
-            ->get();  // Execute the query
+        // Retrieve customer with their associated orders
+        $customer = Customer::with('orders') // Only include orders
+            ->where('customer_id', $customer_id) // Use your actual primary key
+            ->firstOrFail();
 
-        return response()->json($ordersWithStatus);
+        return response()->json($customer->orders);
     }
 
     /**
@@ -41,25 +33,19 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Order $order)
+    public function show(Customer $customer, Order $order)
     {
-        $ordersWithStatus = DB::table('orders as o')
-        ->join('order_statuses as os', 'o.status', '=', 'os.order_status_id')
-        ->select(
-            'o.order_id',
-            'o.customer_id',
-            'o.order_date',
-            'os.name as Order_Status',  // Alias for the order status name
-            'o.comments',
-            'o.shipped_date',
-            'o.shipper_id'
-        )
-        ->where('o.customer_id', $customerId)  // Filter by customer ID
-        ->where('c.customer_id', '=', $id)
-        ->get();  // Execute the query
+        // Check if the order belongs to the customer
+        if ($order->customer_id !== $customer->customer_id) {
+            return response()->json(['message' => 'Order not found for this customer.'], 404);
+        }
 
-    return response()->json($ordersWithStatus);
+        return response()->json($order);
     }
+
+
+
+
 
     /**
      * Update the specified resource in storage.
