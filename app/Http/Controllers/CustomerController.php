@@ -12,26 +12,57 @@ class CustomerController extends Controller
     
     
     public function index()
-    {
-        $customersWithOrders = DB::table('customers as c')
-            ->join('orders as o', 'c.customer_id', '=', 'o.customer_id')
-            ->join('order_statuses as os', 'o.status', '=', 'os.order_status_id')
-            ->select(
-                'c.customer_id',
-                'c.first_name',
-                'c.last_name',
-                'c.address',
-                'c.city',
-                'c.state',
-                'c.points',
-                'o.order_date',
-                'os.name as order_status_name'
-            )
-            ->get();
+{
+    $customersWithOrders = DB::table('customers as c')
+        ->join('orders as o', 'c.customer_id', '=', 'o.customer_id')
+        ->join('order_statuses as os', 'o.status', '=', 'os.order_status_id')
+        ->select(
+            'c.customer_id',
+            'c.first_name',
+            'c.last_name',
+            'c.address',
+            'c.city',
+            'c.state',
+            'c.points',
+            'o.order_id',
+            'o.order_date',
+            'os.name as order_status_name'
+        )
+        ->get();
 
-            
-        return response()->json($customersWithOrders);
+    // Grouping the customers and their orders
+    $customers = [];
+    
+    foreach ($customersWithOrders as $record) {
+        $customerId = $record->customer_id;
+        
+        // If the customer is not already in the array, add them
+        if (!isset($customers[$customerId])) {
+            $customers[$customerId] = [
+                'customer_id' => $record->customer_id,
+                'first_name' => $record->first_name,
+                'last_name' => $record->last_name,
+                'address' => $record->address,
+                'city' => $record->city,
+                'state' => $record->state,
+                'points' => $record->points,
+                'orders' => []
+            ];
+        }
+
+        // Add the current order to the customer's orders array
+        $customers[$customerId]['orders'][] = [
+            'order_id' => $record->order_id,
+            'order_date' => $record->order_date,
+            'order_status_name' => $record->order_status_name
+        ];
     }
+
+    // Convert the associative array to a numerically indexed array
+    $customers = array_values($customers);
+
+    return response()->json($customers);
+}
     
     public function store(Request $request)
     {
