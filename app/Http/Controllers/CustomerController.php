@@ -4,17 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use Illuminate\Support\Facades\DB;
 
 
 class CustomerController extends Controller
 {
     
+    
     public function index()
     {
-        $allCustomers = Customer::all();
-        return $allCustomers;
+        // Retrieve all customers with their associated orders
+        $customers = Customer::with('order')->get();
+
+        return response()->json($customers);
     }
 
+    
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -31,12 +36,15 @@ class CustomerController extends Controller
         $customer = Customer::create($data);
         return $customer;
     }
-
+ 
     public function show(string $id)
-    {
-        $customer = Customer::findOrFail($id);
-        return $customer;
-    }
+{
+    // Retrieve the customer with the specified ID along with their associated orders
+    $customer = Customer::with('order')->findOrFail($id);
+
+    return response()->json($customer);
+}
+
 
     public function update(Request $request, string $id)
     {

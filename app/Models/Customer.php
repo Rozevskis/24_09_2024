@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
@@ -48,5 +48,11 @@ class Customer extends Model
         // Returns true if the customer has 2000 or more points
         return $this->points >= 2000;
     }
+
+    public function order(): HasMany
+{
+    return $this->hasMany(Order::class, 'customer_id', 'customer_id'); // Specify the foreign key and local key
+}
+
    
 }
