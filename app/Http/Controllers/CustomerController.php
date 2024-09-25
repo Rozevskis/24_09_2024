@@ -29,6 +29,7 @@ class CustomerController extends Controller
             )
             ->get();
 
+            
         return response()->json($customersWithOrders);
     }
     
@@ -51,9 +52,51 @@ class CustomerController extends Controller
 
     public function show(string $id)
     {
-        $customer = Customer::findOrFail($id);
-        return $customer;
+        $customerWithOrders = DB::table('customers as c')
+            ->join('orders as o', 'c.customer_id', '=', 'o.customer_id')
+            ->join('order_statuses as os', 'o.status', '=', 'os.order_status_id')
+            ->select(
+                'c.customer_id',
+                'c.first_name',
+                'c.last_name',
+                'c.address',
+                'c.city',
+                'c.state',
+                'c.points',
+                'o.order_id',
+                'o.order_date',
+                'os.name as order_status_name'
+            )
+            ->where('c.customer_id', '=', $id)
+            ->get();
+
+        if ($customerWithOrders->isEmpty()) {
+            return response()->json(['message' => 'Customer not found'], 404);
+        }
+
+        // Organize the response structure
+        $customerData = [
+            'customer_id' => $customerWithOrders[0]->customer_id,
+            'first_name' => $customerWithOrders[0]->first_name,
+            'last_name' => $customerWithOrders[0]->last_name,
+            'address' => $customerWithOrders[0]->address,
+            'city' => $customerWithOrders[0]->city,
+            'state' => $customerWithOrders[0]->state,
+            'points' => $customerWithOrders[0]->points,
+            'orders' => []
+        ];
+
+        foreach ($customerWithOrders as $order) {
+            $customerData['orders'][] = [
+                'order_id' => $order->order_id,
+                'order_date' => $order->order_date,
+                'order_status_name' => $order->order_status_name
+            ];
+        }
+
+        return response()->json($customerData);
     }
+
 
     public function update(Request $request, string $id)
     {
