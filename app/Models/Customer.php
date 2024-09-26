@@ -10,13 +10,10 @@ class Customer extends Model
 {
     use HasFactory;
 
-    // Specify the table name if it's not the plural form of the model name
-    protected $table = 'customers'; // Replace with your actual table name
+    protected $table = 'customers'; 
 
-    // Specify the primary key if it's not 'id'
     protected $primaryKey = 'customer_id';
 
-    // Define which fields are mass assignable (optional but recommended)
     protected $fillable = [
         'first_name',
         'last_name',
@@ -28,7 +25,6 @@ class Customer extends Model
         'points'
     ];
 
-    // If the primary key is not auto-incrementing
     public $incrementing = false;
 
     protected $hidden = [
@@ -36,7 +32,6 @@ class Customer extends Model
         'phone',
     ];
 
-    // If your table doesn't use Laravel's default timestamps (created_at, updated_at)
     public $timestamps = false;
 
     // Append the is_gold_member attribute to the JSON response

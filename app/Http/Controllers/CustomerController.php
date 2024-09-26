@@ -14,7 +14,7 @@ class CustomerController extends Controller
     public function index()
     {
         // Retrieve all customers with their associated orders
-        $customers = Customer::with('order')->get();
+        $customers = Customer::with('orders')->get();
 
         return response()->json($customers);
     }
@@ -38,12 +38,12 @@ class CustomerController extends Controller
     }
  
     public function show(string $id)
-{
-    // Retrieve the customer with the specified ID along with their associated orders
-    $customer = Customer::with('order')->findOrFail($id);
+    {
+        // Retrieve the customer with the specified ID along with their associated orders
+        $customer = Customer::with('orders')->findOrFail($id);
 
-    return response()->json($customer);
-}
+        return response()->json($customer);
+    }
 
 
     public function update(Request $request, string $id)
