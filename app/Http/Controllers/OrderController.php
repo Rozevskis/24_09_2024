@@ -25,9 +25,28 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, $customer_id)
     {
-        //
+        // Check if customer exists
+        $customer = Customer::find($customer_id);
+        if (!$customer) {
+            return response()->json(['message' => 'Customer not found'], 404);
+        }
+    
+        // Validate the incoming request
+        $validatedData = $request->validate([
+            'order_date' => 'required|date',
+            'status' => 'required|integer',
+            'comments' => 'nullable|string',
+            'shipped_date' => 'nullable|date',
+            'shipper_id' => 'nullable|integer',
+        ]);
+    
+        // Create the order and associate it with the customer
+        $order = $customer->orders()->create($validatedData);
+    
+        // Return a response with the created order
+        return response()->json($order, 201); // 201 Created
     }
 
     /**
